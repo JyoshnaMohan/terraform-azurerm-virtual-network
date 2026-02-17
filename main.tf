@@ -11,11 +11,10 @@ module "subnet" {
   source   = "./subnet"
   for_each = local.subnets
 
-  names               = var.names
-  resource_group_name = var.resource_group_name
-  location            = var.location
-  tags                = var.tags
-
+  names                = var.names
+  resource_group_name  = var.resource_group_name
+  location             = var.location
+  tags                 = var.tags
   naming_rules         = var.naming_rules
   enforce_subnet_names = local.enforce_subnet_names
 
@@ -25,11 +24,13 @@ module "subnet" {
 
   private_endpoint_network_policies             = each.value.private_endpoint_network_policies
   private_link_service_network_policies_enabled = each.value.private_link_service_network_policies_enabled
+  default_outbound_access_enabled               = each.value.default_outbound_access_enabled
 
   service_endpoints = each.value.service_endpoints
   delegations       = each.value.delegations
 
   create_network_security_group = each.value.create_network_security_group
+  security_group_prefix         = each.value.security_group_prefix
   configure_nsg_rules           = each.value.configure_nsg_rules
   allow_internet_outbound       = each.value.allow_internet_outbound
   allow_lb_inbound              = each.value.allow_lb_inbound
@@ -110,7 +111,7 @@ resource "azurerm_route_table" "aks_route_table" {
     ignore_changes = [tags]
   }
 
-  name                = format("%s-%s-routetable", var.resource_group_name, (startswith(each.key, "aks-") ? each.key : "aks-${each.key}"))
+  name = format("%s-%s-routetable", var.resource_group_name, (startswith(each.key, "aks-") ? each.key : "aks-${each.key}"))
   # name                = "${var.resource_group_name}-aks-${each.key}-routetable"
   location            = var.location
   resource_group_name = var.resource_group_name

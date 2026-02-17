@@ -1,4 +1,6 @@
 locals {
+  virtual_network_name = (var.virtual_network_name != null && var.virtual_network_name != "" ? var.virtual_network_name : (var.use_product_name ? "${var.names.product_name}-${var.names.subscription_type}-${var.names.location}-vnet" : "${var.names.product_group}-${var.names.subscription_type}-${var.names.location}-vnet"))
+
   enforce_subnet_names = (var.naming_rules == "" ? false : var.enforce_subnet_names)
 
   subnets = zipmap(keys(var.subnets), [for subnet in values(var.subnets) : merge(var.subnet_defaults, subnet)])
@@ -32,5 +34,4 @@ locals {
       "${id}-${desc}" => merge({ aks_id = id, name = desc }, info)
     }
   ]...)
-
 }
